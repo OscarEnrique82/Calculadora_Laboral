@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Prestaciones Pro - El Salvador</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Paleta Moderna Refinada */
+            --primary: #0066FF; /* Azul más vibrante */
+            --primary-gradient: linear-gradient(135deg, #0066FF 0%, #0047AB 100%);
+            --secondary-bg: #F4F7FA;
+            --panel-bg: rgba(255, 255, 255, 0.85); /* Para efecto glass */
+            --text-main: #1A1A1A;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --danger: #EF4444;
+            --accent: #FFD700; /* Dorado sutil para acentos */
+            
+            /* Sombras Modernas */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--secondary-bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #FFFFFF;
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        h1, h2, h3 {
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        h1 {
+            color: var(--text-main);
+            font-size: 2.75rem;
+            text-align: center;
+            margin-bottom: 8px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Secciones del Formulario */
+        .form-section {
+            background: var(--panel-bg);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(8px); /* Efecto Glassmorphism */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-section h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section h3::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+            margin-right: 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        input[type="number"], select {
+            padding: 14px 18px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #FFFFFF;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #FFFFFF;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .checkbox-group input {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        button.btn-calculate {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 18px 25px;
+            width: 100%;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s, box-shadow 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+        }
+
+        button.btn-calculate:hover {
+            box-shadow: 0 6px 18px rgba(0, 102, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        button.btn-calculate:active {
+            transform: translateY(1px);
+        }
+
+        /* Panel de Resultados Moderno */
+        .results-panel {
+            display: none;
+            margin-top: 40px;
+            padding: 40px;
+            border-radius: 20px;
+            background: #FFFFFF;
+            border: 1px solid #D1FAE5; /* Borde verde muy suave */
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--primary-gradient);
+        }
+
+        .results-panel.active {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-panel h2 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-row span:first-child {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .result-row span:last-child {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .result-row.deduction span:last-child {
+            color: var(--danger);
+        }
+
+        .result-row.total {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            margin-top: 25px;
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .result-row.total span:first-child {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .result-row.total span:last-child {
+            color: #FFFFFF;
+            font-size: 2rem;
+        }
+
+        .deductions-header {
+            margin-top: 25px;
+            font-size: 1rem;
+            color: var(--danger);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .deductions-header::before {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 2px;
+            background: var(--danger);
+            margin-right: 8px;
+        }
+
+        .note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 25px;
+            padding: 15px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            text-align: justify;
+            border: 1px solid var(--border);
+        }
+
+        /* Responsividad Mejorada */
+        @media (max-width: 768px) {
+            body { padding: 20px 10px; }
+            .container { padding: 30px; border-radius: 16px; }
+            h1 { font-size: 2.1rem; }
+            .form-section { padding: 20px; }
+            .results-panel { padding: 25px; }
+            .result-row.total { font-size: 1.4rem; padding: 15px; }
+            .result-row.total span:last-child { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calculadora de Liquidación</h1>
+    <div class="subtitle">Herramienta Profesional · Código de Trabajo de El Salvador</div>
+
+    <form id="calcForm">
+        <!-- Bloque 1: Datos financieros y antigüedad -->
+        <div class="form-section">
+            <h3>Datos Financieros y Antigüedad</h3>
+            <div class="grid">
+                <div class="form-group">
+                    <label for="salario">Ingreso Mensual (USD $)</label>
+                    <input type="number" id="salario" step="0.01" min="0" required placeholder="Ej: 850.00">
+                </div>
+                <div class="form-group">
+                    <label for="anios">Años Laborados Completos</label>
+                    <input type="number" id="anios" min="0" required placeholder="Ej: 4">
+                </div>
+                <div class="form-group">
+                    <label for="meses">Meses Laborados (Fracción del último año)</label>
+                    <input type="number" id="meses" min="0" max="11" required placeholder="Ej: 6">
+                </div>
+            </div>
+        </div>
+
+        <!-- Bloque 2: Causa de finalización -->
+        <div class="form-section">
+            <h3>Causa de Finalización</h3>
+            <div class="form-group">
+                <label for="causa">Tipo de Cierre</label>
+                <select id="causa" required>
+                    <option value="" disabled selected>Seleccione el motivo de retiro...</option>
+                    <option value="despido">Despido Injustificado</option>
+                    <option value="renuncia">Renuncia Voluntaria (Ley Reguladora)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Bloque 3: Jornadas Extraordinarias -->
+        <div class="form-section">
+            <h3>Jornadas Especiales (Opcional)</h3>
+            <div class="grid" id="panelJornadas">
+                <div class="form-group">
+                    <label for="extrasDiurnas">Horas Extras Diurnas</label>
+                    <input type="number" id="extrasDiurnas" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="extrasNocturnas">Horas Extras Nocturnas</label>
+                    <input type="number" id="extrasNocturnas" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="asuetos">Días de Asueto Laborados</label>
+                    <input type="number" id="asuetos" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="descansos">Días de Descanso Laborados</label>
+                    <input type="number" id="descansos" min="0" value="0">
+                </div>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="noAplica" onchange="toggleJornadas()">
+                <label for="noAplica">No aplica recargos especiales (Reiniciar a cero)</label>
+            </div>
+        </div>
+
+        <button type="button" class="btn-calculate" onclick="calcular()">Calcular Mi Liquidación</button>
+    </form>
+
+    <!-- Panel de Resultados -->
+    <div id="resultados" class="results-panel">
+        <h2>Desglose de Liquidación</h2>
+        
+        <div class="result-row">
+            <span>Vacación Proporcional (+30% prima legal)</span>
+            <span id="resVacacion">$0.00</span>
+        </div>
+        <div class="result-row">
+            <span>Aguinaldo Proporcional</span>
+            <span id="resAguinaldo">$0.00</span>
+        </div>
+        <div class="result-row" id="filaIndemnizacion">
+            <span id="lblIndemnizacion">Indemnización (Con techos legales aplicados)</span>
+            <span id="resIndemnizacion">$0.00</span>
+        </div>
+        <div class="result-row">
+            <span>Subtotal Horas Extras Diurnas (100% recargo)</span>
+            <span id="resExtraDiurna">$0.00</span>
+        </div>
+        <div class="result-row">
+            <span>Subtotal Horas Extras Nocturnas (150% recargo total)</span>
+            <span id="resExtraNocturna">$0.00</span>
+        </div>
+        <div class="result-row">
+            <span>Días de Asueto Laborados (Pago Doble)</span>
+            <span id="resAsueto">$0.00</span>
+        </div>
+        <div class="result-row">
+            <span>Días de Descanso Semanal (Pago Doble)</span>
+            <span id="resDescanso">$0.00</span>
+        </div>
+
+        <div class="deductions-header">
+            Deducciones de Ley (Sobre ingresos gravables)*
+        </div>
+        <div class="result-row deduction">
+            <span>ISSS (3%)</span>
+            <span id="resISSS">-$0.00</span>
+        </div>
+        <div class="result-row deduction">
+            <span>AFP (7.25%)</span>
+            <span id="resAFP">-$0.00</span>
+        </div>
+        <div class="result-row deduction">
+            <span>Renta (Retención 10% sobre pago definitivo)</span>
+            <span id="resRenta">-$0.00</span>
+        </div>
+
+        <div class="result-row total">
+            <span>MONTO LÍQUIDO A RECIBIR</span>
+            <span id="resTotal">$0.00</span>
+        </div>
+
+        <div class="note">
+            <strong>* Nota legal importante:</strong> Según la legislación salvadoreña, la indemnización por despido/renuncia y el aguinaldo proporcional (hasta un límite de $1,500) están **exentos** de descuentos de ISSS y AFP. Las deducciones calculadas aplican únicamente sobre vacaciones proporcionales y recargos por horas y días especiales trabajados. Esta herramienta utiliza el salario mínimo vigente de $365.00 para los cálculos de techos legales.
+        </div>
+    </div>
+</div>
+
+<script>
+    // Variables Salario Mínimo actual (Comercio y Servicios)
+    const SALARIO_MINIMO_MENSUAL = 365.00;
+    const SALARIO_MINIMO_DIARIO = SALARIO_MINIMO_MENSUAL / 30; // ~$12.17
+
+    function toggleJornadas() {
+        const noAplica = document.getElementById('noAplica').checked;
+        const inputs = document.querySelectorAll('#panelJornadas input');
+        inputs.forEach(input => {
+            input.disabled = noAplica;
+            if (noAplica) input.value = 0;
+        });
+    }
+
+    function formatearMoneda(valor) {
+        return '$' + parseFloat(valor).toFixed(2);
+    }
+
+    function calcular() {
+        // Validar formulario
+        const form = document.getElementById('calcForm');
+        if(!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        // 1. Obtener Valores
+        const salario = parseFloat(document.getElementById('salario').value);
+        const anios = parseInt(document.getElementById('anios').value);
+        const meses = parseInt(document.getElementById('meses').value);
+        const causa = document.getElementById('causa').value;
+
+        const extDiurnas = parseFloat(document.getElementById('extrasDiurnas').value) || 0;
+        const extNocturnas = parseFloat(document.getElementById('extrasNocturnas').value) || 0;
+        const asuetos = parseFloat(document.getElementById('asuetos').value) || 0;
+        const descansos = parseFloat(document.getElementById('descansos').value) || 0;
+
+        // Salarios base
+        const salarioDiario = salario / 30;
+        const salarioHora = salarioDiario / 8; // Basado en jornada estándar de 8h
+
+        // 2. Cálculo de Vacaciones Proporcionales (Art. 177 y 187)
+        // 15 días base + 30% prima vacacional, proporcional a los meses
+        const valorVacacionAnual = (salarioDiario * 15) * 1.30;
+        const montoVacacion = (valorVacacionAnual / 12) * meses;
+
+        // 3. Cálculo de Aguinaldo Proporcional (Art. 198)
+        let diasAguinaldo = 15;
+        if (anios >= 3 && anios < 10) diasAguinaldo = 19;
+        else if (anios >= 10) diasAguinaldo = 21;
+        
+        const valorAguinaldoAnual = salarioDiario * diasAguinaldo;
+        const montoAguinaldo = (valorAguinaldoAnual / 12) * meses;
+
+        // 4. Cálculo de Indemnización / Compensación Económica
+        let montoIndemnizacion = 0;
+        
+        if (causa === 'despido') {
+            // Techo de despido: 4 salarios mínimos diarios (Art. 58 CT)
+            const techoDespido = SALARIO_MINIMO_DIARIO * 4;
+            const salarioBaseIndem = Math.min(salarioDiario, techoDespido);
+            
+            // 30 días por año + parte proporcional (2.5 días por mes)
+            const diasTotalesIndem = (anios * 30) + (meses * 2.5);
+            montoIndemnizacion = salarioBaseIndem * diasTotalesIndem;
+            document.getElementById('lblIndemnizacion').innerText = "Indemnización por Despido";
+
+        } else if (causa === 'renuncia') {
+            // Ley Reguladora de Renuncia Voluntaria
+            if (anios >= 2) {
+                // Techo de renuncia: 2 salarios mínimos diarios
+                const techoRenuncia = SALARIO_MINIMO_DIARIO * 2;
+                const salarioBaseRenuncia = Math.min(salarioDiario, techoRenuncia);
+                
+                // 15 días por año + parte proporcional (1.25 días por mes)
+                const diasTotalesRenuncia = (anios * 15) + (meses * 1.25);
+                montoIndemnizacion = salarioBaseRenuncia * diasTotalesRenuncia;
+            } else {
+                // Renuncia voluntaria con menos de 2 años no genera prestación económica
+                montoIndemnizacion = 0;
+                alert("Nota: La renuncia voluntaria con menos de 2 años de servicio no genera compensación económica por antigüedad según la ley reguladora.");
+            }
+            document.getElementById('lblIndemnizacion').innerText = "Compensación por Renuncia Voluntaria";
+        }
+
+        // 5. Cálculo de Jornadas Especiales
+        // Hora extra diurna = 100% de recargo (doble)
+        const montoExtDiurna = extDiurnas * (salarioHora * 2);
+        
+        // Hora extra nocturna (Art 168): recargo 25% por ser noche, y sobre eso 100% por ser extra
+        // En SV equivale a multiplicar la hora normal * 1.25 * 2 = 2.5
+        const montoExtNocturna = extNocturnas * (salarioHora * 2.5);
+
+        // Asuetos y descansos laborados = pago doble
+        const montoAsuetos = asuetos * (salarioDiario * 2);
+        const montoDescansos = descansos * (salarioDiario * 2);
+
+        // 6. Deducciones de Ley
+        // Base gravable: Vacaciones y jornadas/días especiales. (Indemnización y aguinaldo están exentos en su mayoría)
+        const ingresosGravados = montoVacacion + montoExtDiurna + montoExtNocturna + montoAsuetos + montoDescansos;
+        
+        // ISSS: 3% (Tope máximo de cotización salarial es $1,000)
+        let baseISSS = Math.min(ingresosGravados, 1000 * (meses/12 || 1)); 
+        const retencionISSS = baseISSS * 0.03;
+
+        // AFP: 7.25%
+        const retencionAFP = ingresosGravados * 0.0725;
+
+        // ISR (Renta): 10% estándar para pagos eventuales/liquidación
+        const baseRenta = ingresosGravados - retencionISSS - retencionAFP;
+        const retencionRenta = baseRenta > 0 ? (baseRenta * 0.10) : 0;
+
+        // Sumatorias
+        const totalIngresos = montoVacacion + montoAguinaldo + montoIndemnizacion + montoExtDiurna + montoExtNocturna + montoAsuetos + montoDescansos;
+        const totalDeducciones = retencionISSS + retencionAFP + retencionRenta;
+        const liquidoAPagar = totalIngresos - totalDeducciones;
+
+        // 7. Imprimir Resultados
+        document.getElementById('resVacacion').innerText = formatearMoneda(montoVacacion);
+        document.getElementById('resAguinaldo').innerText = formatearMoneda(montoAguinaldo);
+        document.getElementById('resIndemnizacion').innerText = formatearMoneda(montoIndemnizacion);
+        document.getElementById('resExtraDiurna').innerText = formatearMoneda(montoExtDiurna);
+        document.getElementById('resExtraNocturna').innerText = formatearMoneda(montoExtNocturna);
+        document.getElementById('resAsueto').innerText = formatearMoneda(montoAsuetos);
+        document.getElementById('resDescanso').innerText = formatearMoneda(montoDescansos);
+        
+        document.getElementById('resISSS').innerText = "-" + formatearMoneda(retencionISSS);
+        document.getElementById('resAFP').innerText = "-" + formatearMoneda(retencionAFP);
+        document.getElementById('resRenta').innerText = "-" + formatearMoneda(retencionRenta);
+
+        document.getElementById('resTotal').innerText = formatearMoneda(liquidoAPagar);
+
+        // Mostrar panel
+        document.getElementById('resultados').classList.add('active');
+        
+        // Scroll automático hacia los resultados
+        document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
